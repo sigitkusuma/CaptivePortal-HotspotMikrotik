@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>HotSpot com Login Social</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="-1" />
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
+	<script src="md5.js"></script>
+	<script>
+        var appID="330224907791808";
+	    var appSE="c55ab817e60df51ffeeca618e791995a";
+		var pageID="PAGE-ID";
+	    var permissoes='public_profile,email,publish_actions';
+		var urlCONN='http://social.wifi.com/fbtoken.html';
+	</script>
+</head>
+
+<body style="background:#00a;">
+    <div style="margin-top:10%;text-align:center;font-family:arial;font-size:24px;color:#fff;" id="dvagfb">Aguardando autorização do facebook para liberar seu acesso!</div>
+	<div style="color:#f00; position: fixed; width: 100%; text-align: center; margin-top: 10vh; padding: 10px 20px; font-family: arial; font-size: 20px;" id="errt"></div>
+    <script type="text/javascript">
+    <!--
+	    // 1=Ignorar erros do facebook, 0=Mostrar erro e parar a execução
+	    var ignore=1;
+		
+	    var auth=1;
+        var url='https://graph.facebook.com/oauth/access_token';
+	        url=url+'?redirect_uri='+urlCONN;
+	        url=url+'&client_id='+appID;
+	        url=url+'&client_secret='+appSE;
+	        url=url+'&code='+valueURL('code');
+	    var Httpreq = new XMLHttpRequest(); // a new request
+        Httpreq.open("GET",url,false);
+        try {
+            Httpreq.send(null);
+        } catch(e) {
+		    var erro='<span style="color:#000;">Erro.:</span>'+e.message;
+			erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!</a>';
+		    document.getElementById('errt').innerHTML=erro;
+			document.getElementById('errt').style.background="#fe0";
+		}
+		console.log(JSON.parse(Httpreq.responseText));
+		if ((JSON.parse(Httpreq.responseText).error != null) && (ignore==0)) {
+		    var erro='<span style="color:#000;">Erro.:</span>'+Httpreq.responseText;
+			erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!</a>';
+		    document.getElementById('errt').innerHTML=erro;
+			document.getElementById('errt').style.background="#fe0";
+			auth=0;
+		} else {
+	        var tk=JSON.parse(Httpreq.responseText).access_token;
+		}
+		if (auth>0) {
+            var url='https://graph.facebook.com/me?access_token='+tk;
+            var Httpreq = new XMLHttpRequest(); // a new request
+            Httpreq.open("GET",url,false);
+            try {
+                Httpreq.send(null);
+            } catch(e) {
+		        var erro='<span style="color:#000;">Erro.:</span>'+e.message;
+		    	erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!!</a>';
+		        document.getElementById('errt').innerHTML=erro;
+				document.getElementById('errt').style.background="#fe0";
+		    }
+		    console.log(JSON.parse(Httpreq.responseText));
+		    if ((JSON.parse(Httpreq.responseText).error != null) && (ignore==0)) {
+		        var erro='<span style="color:#000;">Erro.:</span>'+Httpreq.responseText;
+		    	erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!</a>';
+		        document.getElementById('errt').innerHTML=erro;
+				document.getElementById('errt').style.background="#fe0";
+		    	auth=0;
+		    } else {
+		        var idfb=JSON.parse(Httpreq.responseText).id;
+		        var nmfb=JSON.parse(Httpreq.responseText).name;
+		    }
+		}
+		
+		if (auth>0) {
+		    // Publica check-in na linha do tempo do usuário
+                var url='https://graph.facebook.com/v2.9/'+idfb+'/feed?with=location&place='+pageID+'&access_token='+tk;
+		    // Publica um link na linha do tempo do usuário
+                // var url='https://graph.facebook.com/v2.9/'+idfb+'/feed?link=http://kcfdesigner.com/&access_token='+tk;
+            var Httpreq = new XMLHttpRequest(); // a new request
+            Httpreq.open("POST",url,false);
+            try {
+                Httpreq.send(null);
+            } catch(e) {
+		        var erro='<span style="color:#000;">Erro.:</span>'+e.message;
+		    	erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!</a>';
+		        document.getElementById('errt').innerHTML=erro;
+				document.getElementById('errt').style.background="#fe0";
+		    }
+		    console.log(JSON.parse(Httpreq.responseText));
+		    if ((JSON.parse(Httpreq.responseText).error != null) && (ignore==0)) {
+		        var erro='<span style="color:#000;">Erro.:</span>'+Httpreq.responseText;
+		    	erro=erro+'<br><a style="font-size: 16px;" href="login.html">Clique aqui para tentar novamente!</a>';
+		        document.getElementById('errt').innerHTML=erro;
+				document.getElementById('errt').style.background="#fe0";
+		    } else {
+		        if (vld === undefined) {
+	            	var v=0
+		        	var s=0;
+                    var vld = setInterval(function() {
+		                if ((JSON.parse(Httpreq.responseText).id!='undefined') && (s<=4)) {
+		        		    v=2;
+		        		    top.location='login.html?conectar=facebook&usuario='+idfb+'&senha='+btoa(nmfb);
+		        		}
+                        if (v==2) {clearInterval(vld);}
+		        		s=s+1;
+	                }, 600);
+	            }
+		    }
+		}
+    </script>
+</body>
+</html>
